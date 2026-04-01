@@ -1,0 +1,66 @@
+9082491824
+Thane, Maharashtra
+aj958601@gmail.com
+WebDeveloper
+Portfolio: abhishek-js.netlify.app
+github.com/ abhishek-jaiswar
+linkedin.com/in/ abhishek-jaiswar
+Passionate WebDeveloperwith1yearofprofessional experience at TCS and3yearsofhands-onpersonalproject development.
+Skilled in React, Tailwind CSS, Redux, Node.js, Express.js, and REST APIs.
+EDUCATION
+B.E. ComputerEngineering, TernaEngineering College
+• AverageCGPA:8.22
+• Coursework: DataStructures andAlgorithms, Applied Mathematics, OOPSinJava,C,DBMS
+H.S.C Science, N.K.T. College
+• Secured: 76.46
+SKILLS
+2020-2024
+Feb2020
+Languages
+Libraries/Frameworks
+Databases
+Platforms/Tools
+WORKEXPERIENCE
+Java , C/C++,JavaScript, TypeScript, Python
+HTML,CSS,React, Redux,Nextjs, Express.js, Node.js Material UI, Shadcn UI, Chakra UI, TailwindCSS
+MongoDB,PostgreSQL
+Vercel, Netlify, Git, NPM, Postman, Dynatrace, ELK, Vite
+API GatewayEngineer
+Tata Consultancy Services
+• DevelopedAPIpolicies, routing rules, and implemented best-practice security controls.
+Dec2024—Present
+• Built aninternal tool using Python, HTML, CSS, andJavaScript to generate CSR, keys, and PFXfiles, eliminating server
+dependency.
+SoftwareDeveloper,Intern
+Career Survival
+Jan2024—Feb2024
+• DevelopedresponsiveUIcomponentsusingReact.js, Tailwind CSS, andShadcn/UI. Responsibilities included creating a
+dashboard, andprofile pages, andutilized React.js components to ensure smooth navigation and Tailwind CSS for styling
+Front-end Developer, Intern
+Openleaf Logistics
+Sep2023—Dec2023
+• Collaborated with teammemberstointegrateChakraUIcomponentsintothedashboard,significantly enhancingUI
+consistency and user experience.
+• Developedaserver-side application using Node.js to automate invoice generation, reducing manual effort and enhancing
+operational efficiency.
+• Developeddashboardfeaturesincluding date filters and search functionality.
+• ImplementedperformanceoptimizationsusingtheuseMemohook toimproveapplicationresponsivenessandloadtimes.
+PROJECTS
+Spendly–ExpenseTracker
+• Designedauser-friendly dashboard that provides clear visualizations of tracked expenses and incomes, with easy-to-navigate
+features for expense management.
+• IntegratedGeminiflashAPItoenablereceiptscanninganddataextraction,allowinguserstoseamlesslytrackexpensesby
+uploading Receipts.
+• Implementedexpense forecastingusingProphetforfutureexpensepredictionsbasedonpastdatatrends.
+• EnableduserstouploadbulkexpensesthroughExcelsheetuploadsorreceiptscans,
+TechStack: Next.js, PostgreSQL,Flask, TailwindCSS, TypeScript
+MovieVerse Live — Code
+• Implementedinteractive filtering options, allowing users to effortlessly navigate and discover content based on genres, release
+dates, and ratings
+• Seamlessbrowsingexperiencewithsmoothnavigationanddynamiccontentloading
+TechStack: React, Redux, SCSSandMUI
+SmartShop Live — Code
+• Constructedafully functional website encompassing product catalog, shopping cart, secure checkout, and order management
+functionalities
+• Integrated paymentgatewayStripetofacilitate smooth and secure online transaction
+TechStack: React, Redux, MUI,MongoDB,Express,Nodejs, Stripe, TailwindCSS
