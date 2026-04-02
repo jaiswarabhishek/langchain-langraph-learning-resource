@@ -21,3 +21,5 @@ groq
 openai
 pydantic
 streamlit
+arxiv
+wikipedia
