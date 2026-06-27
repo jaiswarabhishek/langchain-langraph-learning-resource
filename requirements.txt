@@ -24,3 +24,9 @@ streamlit
 arxiv
 wikipedia
 tiktoken
+playwright
+lxml
+langchain-openrouter
+langgraph-checkpoint-sqlite
+httpx
+mcp[cli]

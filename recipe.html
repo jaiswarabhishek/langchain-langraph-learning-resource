@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Recipe CRUD App</title>
+<style>
+  :root {
+    --primary: #ff6f61;
+    --bg: #f9fafb;
+    --card-bg: #ffffff;
+    --text: #333333;
+    --border: #e2e8f0;
+    --radius: 8px;
+    --shadow: rgba(0, 0, 0, 0.1);
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 1rem;
+  }
+  h1 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .form-card {
+    background: var(--card-bg);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 6px var(--shadow);
+  }
+  .form-card h2 {
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+  }
+  .form-group {
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group label {
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+  }
+  .form-group input,
+  .form-group textarea {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    resize: vertical;
+  }
+  .form-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-secondary {
+    background: #6b7280;
+    color: #fff;
+  }
+  .btn-danger {
+    background: #dc2626;
+    color: #fff;
+  }
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .recipe-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 6px var(--shadow);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .recipe-card h3 {
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+    word-break: break-word;
+  }
+  .recipe-card p {
+    margin-bottom: 0.5rem;
+  }
+  .card-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  @media (max-width: 600px) {
+    .form-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .btn {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Recipe Manager</h1>
+  <div class="container">
+    <!-- Form -->
+    <section class="form-card" id="recipe-form-section">
+      <h2 id="form-title">Add New Recipe</h2>
+      <form id="recipe-form">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" name="title" required />
+        </div>
+        <div class="form-group">
+          <label for="ingredients">Ingredients (one per line)</label>
+          <textarea id="ingredients" name="ingredients" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="instructions">Instructions</label>
+          <textarea id="instructions" name="instructions" rows="4" required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="save-btn">Save</button>
+          <button type="button" class="btn btn-secondary" id="cancel-btn" style="display:none;">Cancel</button>
+        </div>
+      </form>
+    </section>
+    <!-- Recipes List -->
+    <section>
+      <h2>My Recipes</h2>
+      <div class="recipes-grid" id="recipes-grid"></div>
+    </section>
+  </div>
+
+<script>
+  // ----- Data handling -----
+  const STORAGE_KEY = 'recipes-app-data';
+  let recipes = [];
+  let editId = null; // holds the id of recipe being edited
+
+  const loadRecipes = () => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try { recipes = JSON.parse(stored); } catch { recipes = []; }
+    }
+  };
+
+  const saveRecipes = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(recipes));
+  };
+
+  // ----- UI Rendering -----
+  const recipesGrid = document.getElementById('recipes-grid');
+  const formTitle = document.getElementById('form-title');
+  const cancelBtn = document.getElementById('cancel-btn');
+
+  const renderRecipes = () => {
+    recipesGrid.innerHTML = '';
+    if (recipes.length === 0) {
+      recipesGrid.innerHTML = '<p>No recipes yet. Add one above!</p>';
+      return;
+    }
+    recipes.forEach(recipe => {
+      const card = document.createElement('div');
+      card.className = 'recipe-card';
+      const title = document.createElement('h3');
+      title.textContent = recipe.title;
+      const ingredients = document.createElement('p');
+      ingredients.innerHTML = '<strong>Ingredients:</strong><br>' + recipe.ingredients.split('\n').map(i => `- ${i}`).join('<br>');
+      const instructions = document.createElement('p');
+      instructions.innerHTML = '<strong>Instructions:</strong><br>' + recipe.instructions.replace(/\n/g, '<br>');
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn btn-secondary';
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => startEdit(recipe.id);
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-danger';
+      delBtn.textContent = 'Delete';
+      delBtn.onclick = () => deleteRecipe(recipe.id);
+      actions.append(editBtn, delBtn);
+
+      card.append(title, ingredients, instructions, actions);
+      recipesGrid.appendChild(card);
+    });
+  };
+
+  // ----- CRUD Operations -----
+  const addRecipe = (data) => {
+    const newRecipe = { id: Date.now(), ...data };
+    recipes.unshift(newRecipe); // newest on top
+    saveRecipes();
+    renderRecipes();
+  };
+
+  const updateRecipe = (id, data) => {
+    recipes = recipes.map(r => (r.id === id ? { ...r, ...data } : r));
+    saveRecipes();
+    renderRecipes();
+  };
+
+  const deleteRecipe = (id) => {
+    if (confirm('Are you sure you want to delete this recipe?')) {
+      recipes = recipes.filter(r => r.id !== id);
+      saveRecipes();
+      renderRecipes();
+      // If we were editing this one, reset form
+      if (editId === id) resetForm();
+    }
+  };
+
+  // ----- Form handling -----
+  const form = document.getElementById('recipe-form');
+  const titleInput = document.getElementById('title');
+  const ingredientsInput = document.getElementById('ingredients');
+  const instructionsInput = document.getElementById('instructions');
+  const saveBtn = document.getElementById('save-btn');
+
+  const resetForm = () => {
+    editId = null;
+    form.reset();
+    formTitle.textContent = 'Add New Recipe';
+    saveBtn.textContent = 'Save';
+    cancelBtn.style.display = 'none';
+  };
+
+  const startEdit = (id) => {
+    const recipe = recipes.find(r => r.id === id);
+    if (!recipe) return;
+    editId = id;
+    titleInput.value = recipe.title;
+    ingredientsInput.value = recipe.ingredients;
+    instructionsInput.value = recipe.instructions;
+    formTitle.textContent = 'Edit Recipe';
+    saveBtn.textContent = 'Update';
+    cancelBtn.style.display = 'inline-block';
+    // Scroll to form for better UX on mobile
+    document.getElementById('recipe-form-section').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  cancelBtn.addEventListener('click', resetForm);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+      title: titleInput.value.trim(),
+      ingredients: ingredientsInput.value.trim(),
+      instructions: instructionsInput.value.trim()
+    };
+    if (editId) {
+      updateRecipe(editId, data);
+    } else {
+      addRecipe(data);
+    }
+    resetForm();
+  });
+
+  // ----- Init -----
+  loadRecipes();
+  renderRecipes();
+</script>
+</body>
+</html>

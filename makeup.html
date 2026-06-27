@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Makeup Boutique</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ENjdO4Dr2bkBIFxQpeoA6V4Y2iV9U5FQ8mM+XkX0vYl5fXH8nU5R8h+6M+XK4e0" crossorigin="anonymous" />
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: #fdfdfd;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #c2185b !important;
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+        .product-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        .badge-price {
+            background-color: #c2185b;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: #ff1744;
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+        }
+        @media (max-width: 576px) {
+            .card-img-top {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Makeup Boutique</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                </ul>
+                <button class="btn btn-outline-primary position-relative" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge d-none" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Product Grid -->
+    <div class="container">
+        <div class="row" id="productContainer">
+            <!-- Products will be injected by JS -->
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Your Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="cartBody">
+                    <p class="text-muted">Your cart is empty.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Continue Shopping</button>
+                    <button type="button" class="btn btn-success" id="checkoutBtn" disabled>Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+4f0tF5M4U4GZx0K4G8J+0dQ6j5g" crossorigin="anonymous"></script>
+    <script>
+        // Sample product data (in a real app this could come from a server)
+        const products = [
+            { id: 1, name: "Velvet Matte Lipstick", price: 19.99, img: "https://images.unsplash.com/photo-1612197529319-6eab6d0e3d7a?auto=format&fit=crop&w=400&q=80", category: "Lip" },
+            { id: 2, name: "Silky Foundation", price: 29.99, img: "https://images.unsplash.com/photo-1584466977776-0d8e5e9f7c4e?auto=format&fit=crop&w=400&q=80", category: "Face" },
+            { id: 3, name: "Shimmering Eyeshadow Palette", price: 34.99, img: "https://images.unsplash.com/photo-1572548446579-2e9e0f5e6c2f?auto=format&fit=crop&w=400&q=80", category: "Eye" },
+            { id: 4, name: "Glossy Lip Balm", price: 9.99, img: "https://images.unsplash.com/photo-1583428177307-1e8b6a1e2a13?auto=format&fit=crop&w=400&q=80", category: "Lip" },
+            { id: 5, name: "Bronzer Duo", price: 24.99, img: "https://images.unsplash.com/photo-1581089781317-0c4c5d3b6f70?auto=format&fit=crop&w=400&q=80", category: "Face" },
+            { id: 6, name: "Waterproof Mascara", price: 22.49, img: "https://images.unsplash.com/photo-1615932818221-3a8c6c6a6a91?auto=format&fit=crop&w=400&q=80", category: "Eye" }
+        ];
+
+        const cart = {};
+
+        function renderProducts() {
+            const container = document.getElementById('productContainer');
+            container.innerHTML = '';
+            products.forEach(p => {
+                const col = document.createElement('div');
+                col.className = 'col-12 col-sm-6 col-md-4 mb-4';
+                col.innerHTML = `
+                    <div class="card product-card h-100">
+                        <img src="${p.img}" class="card-img-top" alt="${p.name}">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">${p.name}</h5>
+                            <p class="card-text text-muted mb-2">${p.category}</p>
+                            <div class="mt-auto">
+                                <span class="badge badge-price mb-2">$${p.price.toFixed(2)}</span>
+                                <button class="btn btn-primary w-100" onclick="addToCart(${p.id})"><i class="fas fa-cart-plus me-2"></i>Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            if (cart[productId]) {
+                cart[productId].qty++;
+            } else {
+                cart[productId] = { ...product, qty: 1 };
+            }
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const count = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+            const badge = document.getElementById('cartCount');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+        }
+
+        function renderCart() {
+            const body = document.getElementById('cartBody');
+            const items = Object.values(cart);
+            if (items.length === 0) {
+                body.innerHTML = '<p class="text-muted">Your cart is empty.</p>';
+                document.getElementById('checkoutBtn').disabled = true;
+                return;
+            }
+            let total = 0;
+            const rows = items.map(item => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                return `<tr>
+                    <td><img src="${item.img}" alt="${item.name}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"/></td>
+                    <td>${item.name}</td>
+                    <td>${item.qty}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>$${subtotal.toFixed(2)}</td>
+                    <td><button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+            }).join('');
+            body.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">Total:</td>
+                                <td colspan="2" class="fw-bold">$${total.toFixed(2)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            `;
+            document.getElementById('checkoutBtn').disabled = false;
+        }
+
+        function removeFromCart(productId) {
+            if (!cart[productId]) return;
+            if (cart[productId].qty > 1) {
+                cart[productId].qty--;
+            } else {
+                delete cart[productId];
+            }
+            updateCartBadge();
+            renderCart();
+        }
+
+        // Event listeners
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            renderCart();
+            const modal = new bootstrap.Modal(document.getElementById('cartModal'));
+            modal.show();
+        });
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            alert('Thank you for your purchase! (demo)');
+            // Reset cart
+            for (const key in cart) delete cart[key];
+            updateCartBadge();
+            renderCart();
+            const modalEl = document.getElementById('cartModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+        });
+
+        // Initial render
+        renderProducts();
+    </script>
+</body>
+</html>
